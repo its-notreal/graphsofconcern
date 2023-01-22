@@ -1,33 +1,15 @@
-import { Link, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
-import * as d3 from 'd3'
+
+import SimpleLineChart from 'src/components/SimpleLineChart/SimpleLineChart'
 
 const GraphsPage = () => {
-  const drawChart = function()  {
-    const data = [12, 5, 6, 6, 9, 10];
 
-    const svg = d3.select("#SimpleBarChart")
-      .append("svg")
-      .attr("width", 700)
-      .attr("height", 300);
-
-    svg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", (d, i) => i * 70)
-      .attr("y", (d, i) => 300 - 10 * d)
-      .attr("width", 65)
-      .attr("height", (d, i) => d * 10)
-      .attr("fill", "green");
-  }
-  drawChart()
   return (
     <>
-      <MetaTags title="Graphs" description="Graphs page" />
+      <MetaTags title="Graphs" description="Graphs" />
 
-      <h1>GraphsPage</h1>
-      <span id={"SimpleBarChart"}></span>
+      <h1>Graphs</h1>
+      <SimpleLineChart />
     </>
   )
 }
