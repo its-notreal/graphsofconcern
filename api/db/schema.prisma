@@ -1,18 +1,69 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = "native"
+model User {
+  id                  Int              @id @default(autoincrement())
+  email               String           @unique
+  hashedPassword      String
+  salt                String
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  webAuthnChallenge   String?          @unique
+  credentials         UserCredential[]
 }
 
-// Define your own datamodels here and run `yarn redwood prisma migrate dev`
-// to create migrations for them and apply to your dev DB.
-// TODO: Please remove the following example:
-model UserExample {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model UserCredential {
+  id         String  @id
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  publicKey  Bytes
+  transports String?
+  counter    BigInt
+}
+
+model Graphs {
+  id                       Int             @id @default(autoincrement())
+  graphName                String
+  selectedTypeId           Int
+  selectedType             GraphTypes      @relation(fields: [selectedTypeId], references: [id])
+  creationDate             DateTime
+  modifiedDate             DateTime?
+  description              String?
+  selectedDataSourceTypeId Int
+  selectedDataSourceType   dataSourceTypes @relation(fields: [selectedDataSourceTypeId], references: [id])
+  cssOverride              String?
+}
+
+model GraphTypes {
+  id          Int       @id @default(autoincrement())
+  graphType   GraphType
+  description String
+  showLegend  Boolean
+  defaultCss  String
+  Graphs      Graphs[]
+}
+
+model dataSourceTypes {
+  id             Int            @id @default(autoincrement())
+  dataSourceType DataSourceType
+  description    String
+  Graphs         Graphs[]
+}
+
+enum GraphType {
+  SimpleLineChart
+  SimpleBarChart
+  SimplePieChart
+}
+
+enum DataSourceType {
+  SQL
+  REST
 }
